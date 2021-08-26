@@ -1411,7 +1411,7 @@ void EKF2::UpdateAirspeedSample(ekf2_timestamps_s &ekf2_timestamps)
 		const float true_airspeed_m_s = airspeed.true_airspeed_m_s * _airspeed_scale_factor;
 
 		airspeedSample airspeed_sample {
-			.time_us = airspeed.timestamp,
+			.time_us = airspeed.timestamp_sample,
 			.true_airspeed = true_airspeed_m_s,
 			.eas2tas = airspeed.true_airspeed_m_s / airspeed.indicated_airspeed_m_s,
 		};
