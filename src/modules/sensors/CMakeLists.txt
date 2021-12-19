@@ -59,4 +59,47 @@ px4_add_module(
 		vehicle_gps_position
 		vehicle_imu
 		vehicle_magnetometer
+	PUBLICATIONS
+		"px4::msg::Airspeed /airspeed"
+		"px4::msg::SensorCombined /sensor_combined"
+		"px4::msg::SensorSelection /sensor_selection"
+		"px4::msg::SensorsStatusImu /sensors_status_imu"
+		"px4::msg::SensorPreflightMag /sensor_preflight_mag"
+
+		"px4::msg::VehicleAcceleration /vehicle_acceleration"
+		"px4::msg::VehicleMagnetometer /vehicle_magnetometer"
+		"px4::msg::VehicleAirData /vehicle_air_data"
+		"px4::msg::VehicleImu /vehicle_imu"
+		"px4::msg::VehicleImuStatus /vehicle_imu_status"
+		"px4::msg::VehicleGpsPosition /vehicle_gps_position"
+		"px4::msg::VehicleAngularVelocity /vehicle_angular_velocity"
+		"px4::msg::VehicleAngularAcceleration /vehicle_angular_acceleration"
+
+		# TODO: find a proper home
+		"px4::msg::IrlockReport /irlock_report"
+		"px4::msg::Rpm /rpm"
+
+		"px4::msg::SensorAccel /sensor_accel"
+		"px4::msg::SensorAccel /sensor_accel0"
+		"px4::msg::SensorAccel /sensor_accel1"
+		"px4::msg::SensorAccel /sensor_accel2"
+		"px4::msg::SensorAccel /sensor_accel3"
+
+		"px4::msg::SensorAccelFifo /sensor_accel_fifo"
+		"px4::msg::SensorAccelFifo /sensor_accel_fifo0"
+		"px4::msg::SensorAccelFifo /sensor_accel_fifo1"
+		"px4::msg::SensorAccelFifo /sensor_accel_fifo2"
+		"px4::msg::SensorAccelFifo /sensor_accel_fifo3"
+
+		"px4::msg::SensorGyro /sensor_gyro"
+		"px4::msg::SensorGyro /sensor_gyro0"
+		"px4::msg::SensorGyro /sensor_gyro1"
+		"px4::msg::SensorGyro /sensor_gyro2"
+		"px4::msg::SensorGyro /sensor_gyro3"
+
+		"px4::msg::SensorGyroFifo /sensor_gyro_fifo"
+		"px4::msg::SensorGyroFifo /sensor_gyro_fifo0"
+		"px4::msg::SensorGyroFifo /sensor_gyro_fifo1"
+		"px4::msg::SensorGyroFifo /sensor_gyro_fifo2"
+		"px4::msg::SensorGyroFifo /sensor_gyro_fifo3"
 	)
