@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (c) 2017-2021 PX4 Development Team. All rights reserved.
+ *   Copyright (c) 2013-2021 PX4 Development Team. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,9 +33,15 @@
 
 /**
  *
- * Driver for Sensirion SDP3X Differential Pressure Sensor
+ * Driver for the MEAS Spec series MS4525 connected via I2C.
  *
- * Datasheet: https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/8_Differential_Pressure/Sensirion_Differential_Pressure_Sensors_SDP3x_Digital_Datasheet_V0.8.pdf
+ * Supported sensors:
+ *
+ *    - MS4525DO (http://www.meas-spec.com/downloads/MS4525DO.pdf)
+ *
+ * Interface application notes:
+ *
+ *    - Interfacing to MEAS Digital Pressure Modules (http://www.meas-spec.com/downloads/Interfacing_to_MEAS_Digital_Pressure_Modules.pdf)
  */
 
 #pragma once
@@ -47,31 +53,21 @@
 #include <uORB/PublicationMulti.hpp>
 #include <uORB/topics/differential_pressure.h>
 
-#define I2C_ADDRESS_1_SDP3X 0x21
-#define I2C_ADDRESS_2_SDP3X 0x22
-#define I2C_ADDRESS_3_SDP3X 0x23
-
 static constexpr uint32_t I2C_SPEED = 100 * 1000; // 100 kHz I2C serial interface
+static constexpr uint8_t I2C_ADDRESS_DEFAULT = 0x28;
 
-#define SDP3X_SCALE_TEMPERATURE		200.0f
-#define SDP3X_RESET_ADDR		0x00
-#define SDP3X_RESET_CMD			0x06
-#define SDP3X_CONT_MEAS_AVG_MODE	0x3615
-#define SDP3X_CONT_MODE_STOP		0x3FF9
+/* Register address */
+#define ADDR_READ_MR			0x00	/* write to this address to start conversion */
 
-#define SDP3X_SCALE_PRESSURE_SDP31	60
-#define SDP3X_SCALE_PRESSURE_SDP32	240
-#define SDP3X_SCALE_PRESSURE_SDP33	20
+/* Measurement rate is 100Hz */
+#define MEAS_RATE 100
+#define CONVERSION_INTERVAL	(1000000 / MEAS_RATE)	/* microseconds */
 
-// Measurement rate is 20Hz
-#define SPD3X_MEAS_RATE 100
-#define CONVERSION_INTERVAL	(1000000 / SPD3X_MEAS_RATE)	/* microseconds */
-
-class SDP3X : public device::I2C, public I2CSPIDriver<SDP3X>
+class MS4525 : public device::I2C, public I2CSPIDriver<MS4525>
 {
 public:
-	SDP3X(const I2CSPIDriverConfig &config);
-	~SDP3X() override;
+	MS4525(const I2CSPIDriverConfig &config);
+	~MS4525() override;
 
 	static void print_usage();
 
@@ -82,32 +78,17 @@ public:
 private:
 	int probe() override;
 
-	enum class State {
-		RequireConfig,
-		Configuring,
-		Running
-	};
-
+	int measure();
 	int collect();
 
-	int configure();
-	int read_scale();
+	uint32_t _measure_interval{CONVERSION_INTERVAL};
+	uint32_t _conversion_interval{CONVERSION_INTERVAL};
 
-	bool init_sdp3x();
+	bool _sensor_ok{false};
+	bool _collect_phase{false};
 
-	/**
-	 * Calculate the CRC8 for the sensor payload data
-	 */
-	bool crc(const uint8_t data[], unsigned size, uint8_t checksum);
-
-	/**
-	 * Write a command in Sensirion specific logic
-	 */
-	int write_command(uint16_t command);
-
-	uint16_t _scale{0};
-	const bool _keep_retrying;
-	State _state{State::RequireConfig};
+	int16_t _dp_raw_prev{0};
+	int16_t _dT_raw_prev{0};
 
 	uORB::PublicationMulti<differential_pressure_s> _differential_pressure_pub{ORB_ID(differential_pressure)};
 
